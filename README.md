@@ -1,6 +1,8 @@
 # falling-ascii
  Displays falling characters on the console like in movies
 
+![Screenshot 2021-10-12 at 18.38.55](screenshots/default.png)
+
 ## Usage
 
 To run it, simply type:
@@ -35,4 +37,3 @@ The default values are:
 * --change: 20
 * --cols: 2
 * --speed: 10
-
