@@ -3,22 +3,36 @@ import os
 import sys
 from time import sleep
 from random import randrange
+from alphabets import dict
 
 # Config
 # Probabilities are given from 0 to 9, 9 being 100%
 prob_column = 2
 prob_change_column = 20
 speed = 10
+alphabet = dict['ones']
 
 def help():
     print("Usage:")
     print("\tpython main.py [options]")
     print("")
     print("Options:")
-    print("\t--change  | -C      : The probability from 0 to 100 that a column of chars will disapear.")
-    print("\t--cols    | -c      : The probability from 0 to 100 that a column of chars will appear.")
-    print("\t--help    | -h | -H : Displays this help page.")
-    print("\t--speed   | -s | -S : Set the speed of the text.")
+    print("\t--alphabet | -a | -A : Specifies an alphabet to use. See below for more information.")
+    print("\t--change   | -C      : The probability from 0 to 100 that a column of chars will disapear.")
+    print("\t--cols     | -c      : The probability from 0 to 100 that a column of chars will appear.")
+    print("\t--help     | -h | -H : Displays this help page.")
+    print("\t--speed    | -s | -S : Set the speed of the text.")
+    print("")
+    print("Alphabets:")
+    print("Provide the value \'list\' to the alphabet argument to see what alphabets are available. " + \
+    "To see the characters forming an alphabet, use \'show\' followed by the alphabet\'s name.")
+    print("To specify an alphabet, provide the alphabet's name as value to the alphabet argument. To specify a custom alphabet, use the keyword \'use\' " + \
+    "followed by the alphabet as a word. Every char of the word will be used. No spaces can be contained in a custom alphabet.")
+    print("Here are a few examples:")
+    print("\tpython main.py -a list")
+    print("\tpython main.py -a show binary")
+    print("\tpython main.py -a binary")
+    print("\tpython main.py -a use abc")
     print("")
 
 # Parse args
@@ -79,6 +93,42 @@ while len(sys.argv) > 0:
             "this value must be between 0 and 100",
             is_float = False
         )
+    elif arg == "--alphabet" or arg == '-a' or arg == '-A':
+        if len(sys.argv) == 0:
+            print(f"No values given to argument \'{arg}\'")
+            exit(1)
+        arg = sys.argv.pop(0)
+
+        if arg == 'list':
+            for key, value in dict.items() :
+                print(key)
+            exit(0)
+        elif arg == 'show':
+            if len(sys.argv) == 0:
+                print(f"No alphabets provided")
+                exit(1)
+            arg = sys.argv.pop(0)
+            for key, value in dict.items() :
+                if key == arg:
+                    print(value)
+                    exit(0)
+            print(f"Alphabet \'{arg}\' not found")
+            exit(1)
+        elif arg == 'use':
+            if len(sys.argv) == 0:
+                print(f"No alphabets provided")
+                exit(1)
+            arg = sys.argv.pop(0)
+            alphabet = list(arg)
+        else:
+            found = False
+            for key, value in dict.items() :
+                if key == arg:
+                    alphabet = dict[arg]
+                    found = True
+            if not found:
+                print(f"Alphabet \'{arg}\' not found. Use \'--alphabet list\' to see all available alphabets")
+                exit(1)
     else:
         print(f"Unrecognised argument \'{arg}\'")
         print("Use the argument \'--help\' for help")
@@ -87,6 +137,7 @@ while len(sys.argv) > 0:
 # Shortcuts
 clear_term = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 get_term_size = lambda: os.get_terminal_size()
+get_char = lambda: randrange(len(alphabet))
 
 state = []
 state_len = 0
@@ -101,7 +152,7 @@ try:
         # Add or remove columns
         if state_len < width:
             for i in range(width - state_len):
-                state.append(1 if randrange(100) < prob_column else 0)
+                state.append(get_char() if randrange(100) < prob_column else -1)
         elif state_len > width:
             for i in range(state_len - width):
                 state.pop()
@@ -109,15 +160,15 @@ try:
 
         # Get next state
         for i in range(state_len):
-            if state[i] == 1:
-                state[i] = 0 if randrange(100) < prob_change_column else 1
+            if state[i] >= 0:
+                state[i] = -1 if randrange(100) < prob_change_column else get_char()
             else:
-                state[i] = 1 if randrange(100) < prob_column else 0
+                state[i] = get_char() if randrange(100) < prob_column else -1
 
         # Print
         print('')
         for x in range(width):
-            print('1' if state[x] == 1 else ' ', end='')
+            print(alphabet[state[x]] if state[x] >= 0 else ' ', end='')
 
         # Wait
         sleep(1.0/speed)
