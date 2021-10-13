@@ -173,4 +173,6 @@ try:
         # Wait
         sleep(1.0/speed)
 except KeyboardInterrupt:
+    print('')
     clear_term()
+    exit(0)
