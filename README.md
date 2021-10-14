@@ -35,6 +35,7 @@ python main.py --speed 20 -c 1
 
 The default values are:
 
+* --alphabet: ones
 * --change: 20
 * --cols: 2
 * --speed: 10
@@ -65,3 +66,14 @@ python main.py -a binary
 ```bash
 python main.py -a use abc
 ```
+
+## Contribute
+
+One easy way to contribute is to add alphabets. To do so, only the [`alphabets.py`](https://github.com/lsonnino/falling-ascii/blob/main/alphabets.py) file needs to be modified. The file contains a dictionary named `dict`. Each entry is an alphabet identified by it's name and each value is an array of char. For instance, here is the binary alphabet:
+
+```python
+'binary': ['0', '1']
+```
+
+To add an alphabet, simply add an entry to the dictionary with the new alphabet.
+
